@@ -1,19 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project Coordinates -->
     <groupId>com.example</groupId>
     <artifactId>helloapp</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
 
+    <!-- Repositories -->
+    <repositories>
+        <repository>
+            <id>apache-repo</id>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <!-- Dependencies -->
     <dependencies>
+        <!-- Servlet API (provided by Tomcat) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Use the correct Jasper dependency (for JSP support in Tomcat) -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>9.0.56</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
+    <!-- Build Configuration -->
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+
+            <!-- Maven WAR Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
