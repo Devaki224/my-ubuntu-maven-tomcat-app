@@ -1,1 +1,2 @@
 docker cp index.jsp gifted_yonath:/opt/tomcat/webapps/helloapp/index.jsp
+ docker exec -it sharp_black bash
