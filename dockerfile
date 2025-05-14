@@ -1,30 +1,44 @@
-# Stage 1: Build WAR with Maven on Ubuntu
-FROM ubuntu:24.04 AS builder
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    openjdk-17-jdk \
-    wget \
-    ca-certificates \
-    gnupg \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY . .
-RUN mvn clean package
-
-
-# Stage 2: Run WAR on Tomcat on Ubuntu
+# Base image
 FROM ubuntu:24.04
 
+# Disable interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install required packages: OpenJDK 17, Maven, wget, curl, unzip
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    openjdk-17-jdk \
+    apt-get install -y openjdk-17-jdk maven wget curl unzip && \
+    apt-get clean
+
+# Set environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Set working directory
+WORKDIR /app
+
+# Copy Maven project (pom.xml and src/)
+COPY pom.xml .
+COPY src ./src
+
+# Build the project
+RUN mvn clean package -DskipTests
+
+# Download and extract Apache Tomcat
+WORKDIR /opt
+RUN wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz && \
+    tar -xzf apache-tomcat-9.0.85.tar.gz && \
+    mv apache-tomcat-9.0.85 tomcat && \
+    rm apache-tomcat-9.0.85.tar.gz
+
+# Deploy WAR file to Tomcat's webapps folder
+RUN cp /app/target/*.war /opt/tomcat/webapps/
+
+# Expose Tomcat's default port
+EXPOSE 8080
+
+# Start Tomcat
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]
+
     wget \
     ca-certificates \
     gnupg \
